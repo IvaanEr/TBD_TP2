@@ -1,0 +1,129 @@
+/*INTEGRANTES :
+ Iván Ernandorena
+ Luis Dzikiewicz
+ */
+
+/* Item 0) Obtener los nombres de los duenos de los inmuebles */ 
+
+\project_{nombre,apellido} (
+
+  PoseeInmueble
+
+  \join_{codigo_propietario = codigo}    
+
+  Persona
+
+);
+
+/* Item 1) */
+
+\project_{codigo} ( 
+	
+	\select_{precio <= 700000 AND precio >= 600000} INMUEBLE
+
+);
+
+/* Item 2) */
+
+\project_{nombre, apellido} (
+
+	PERSONA \join (
+
+				CLIENTE \join (
+
+					\rename_{vendedor} (
+
+						\project_{codigo} (\select_{nombre = "Mirta" AND apellido = "Gonzalez"} PERSONA))))
+);
+
+/* Item 3) */
+
+\project_{nombre, apellido, codigo, direccion} (
+
+ 	INMUEBLE \join (
+
+ 		\project_{nombre,apellido,nombre_poblacion,nombre_zona} (
+
+ 			PERSONA \join_{codigo_cliente = codigo} PREFIEREZONA))
+ );
+
+ /* Item 4) */
+
+ \project_{nombre, apellido} (
+
+ 	PERSONA \join_{codigo = codigo_cliente} (
+
+ 		\select_{nombre_poblacion = "Santa Fe" AND nombre_zona = "Norte"} PREFIEREZONA)
+ );
+
+/* Item 5) */
+
+\project_{nombre, apellido}(
+
+	PERSONA \join_{codigo = vendedor} (
+
+		\project_{vendedor} (
+
+			CLIENTE \join_{codigo_cliente = codigo} (
+
+				\select_{nombre_poblacion = "Rosario" AND nombre_zona = "Centro"} PREFIEREZONA)))
+);
+
+/* Item 6) */
+
+\project_{nombre, apellido} (
+
+	PERSONA \join_{vendedor = codigo} \project_{vendedor} (
+
+		VENDEDOR \join CLIENTE)
+);
+
+/*Item 7) */
+
+\project_{nombre_cliente, apellido_cliente, telefono_cliente, nombre, apellido} (
+
+	PERSONA \join_{codigo = vendedor} 
+
+		\rename_{nombre_cliente, apellido_cliente,telefono_cliente,vendedor}
+
+			\project_{nombre, apellido, telefono, vendedor} (
+
+				PERSONA \join CLIENTE \join_{codigo = codigo_cliente} (
+
+					\select_{fecha_hora = "2014-11-06 10:00:00" OR fecha_hora = "2014-11-07 10:00:00" OR fecha_hora=
+
+					 "2014-11-08 10:00:00"} VISITAS))
+);
+
+
+/* Item 8)*/
+
+\project_{codigo_cliente} (\select_{nombre_zona = "Norte" AND nombre_poblacion = "Rosario"} PREFIEREZONA)
+\intersect
+\project_{codigo_cliente} (\select_{nombre_zona = "Sur" AND nombre_poblacion = "Rosario"} PREFIEREZONA)
+\intersect
+\project_{codigo_cliente} (\select_{nombre_zona = "Oeste" AND nombre_poblacion = "Rosario"} PREFIEREZONA)
+\intersect
+\project_{codigo_cliente} (\select_{nombre_zona = "Este" AND nombre_poblacion = "Rosario"} PREFIEREZONA)
+\intersect
+\project_{codigo_cliente} (\select_{nombre_zona = "Centro" AND nombre_poblacion = "Rosario"} PREFIEREZONA);
+
+
+/* Item 9) */
+
+\project_{nombre,apellido} (
+
+	PERSONA \join_{codigo = vendedor} \project_{vendedor} (
+
+		\rename_{cliente,vend,fh} \project_{codigo,vendedor,fecha_hora} (
+
+			CLIENTE \join_{codigo = codigo_cliente} VISITAS) \join_{fh = fecha_hora AND cliente <> codigo} (
+
+				\project_{codigo,vendedor,fecha_hora} (
+
+					CLIENTE \join_{codigo = codigo_cliente} VISITAS)))
+	);
+
+
+
+
